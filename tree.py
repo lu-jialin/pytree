@@ -157,6 +157,7 @@ elif op == '=' :
 			if not len(todo[0]) == 1 : raise Exception('Usage' , 'Can not set multi key or none key by `-A`')
 			def lapply(tree) :
 				if isinstance(tree,dict) or isinstance(tree,list) :
+				#FIXME : `map` to `list` loop on list values but not index, so tree[k] is invalid
 					def rapply(k) :
 						if k == todo[0][0] : tree[k] = todo[1]
 						else : lapply(tree[k])
