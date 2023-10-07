@@ -43,6 +43,8 @@ e.g. {sys.argv[0]} -Y -a a another = value <<< '{{"a":{{"b":{{"-c":{{"d":64}}}}}
 e.g. {sys.argv[0]} -P a b = '{{"$HOME":"JSON/YAML/TOML object is right"}}' <<< '{{"a":{{"b":{{"-c":{{"d":64}}}}}}}}'
 e.g. {sys.argv[0]} -A m = new <<< '{{"a":{{"m":1}},"b":{{"m":1}}}}'
 e.g. {sys.argv[0]} -A - m  <<< '{{"a":{{"m":1}},"b":{{"m":1}}}}'
+e.g. {sys.argv[0]} -A 0 = new <<< '{{"a":[0,1,2,3],"b":["to","never mind"]}}'
+e.g. {sys.argv[0]} -A - 1 <<< '{{"a":[0,1,2,3],"b":["to","never mind"]}}'
 '''
 )
 parser.add_argument('-a' , action="store_true" , help=
@@ -110,7 +112,7 @@ def dump(todump) :
 				'''
 			).replace('\n','').replace('\r',''))
 	elif args.P : print(todump , end='')
-	else : print(jsonlib.dumps(todump)) #`-J` by default
+	else : print(jsonlib.dumps(todump) , end='') #`-J` by default
 def check(op:str , suppose:set) -> str :
 	if not op in suppose :
 		raise Exception('Usage', textwrap.dedent(
@@ -156,12 +158,12 @@ elif op == '=' :
 		if args.A :
 			if not len(todo[0]) == 1 : raise Exception('Usage' , 'Can not set multi key or none key by `-A`')
 			def lapply(tree) :
-				if isinstance(tree,dict) or isinstance(tree,list) :
-				#FIXME : `map` to `list` loop on list values but not index, so tree[k] is invalid
-					def rapply(k) :
-						if k == todo[0][0] : tree[k] = todo[1]
-						else : lapply(tree[k])
-					list(map(rapply,tree))
+				def rapply(k) :
+					#print(f'{dump(k)},{dump(todo[0][0])} : {k == todo[0][0]}')
+					if k == loads(todo[0][0]) : tree[k] = todo[1]
+					else : lapply(tree[k])
+				if isinstance(tree,dict) : list(map(rapply,tree))
+				elif isinstance(tree,list) : list(map(rapply,range(len(tree))))
 			lapply(tree)
 		else :
 			if todo[0] == [] : tree = todo[1]
@@ -176,14 +178,17 @@ elif op == '-' :
 	if args.A :
 		if not len(todo[0]) == 1 : raise Exception('Usage' , 'Can not set multi key or none key by `-A`')
 		def lapply(tree) :
-			if isinstance(tree,dict) or isinstance(tree,list) :
-				def rapply(k) -> list :
-					if k == todo[0][0] : return [k]
-					else :
-						lapply(tree[k])
-						return []
+			def rapply(k) -> list :
+				if k == loads(todo[0][0]) : return [k]
+				else :
+					lapply(tree[k])
+					return []
+			if isinstance(tree,dict) :
 				todel = reduce(lambda l1,l2 : l1 + l2 , map(rapply,tree) , [])
-				for k in todel : del tree[k]
+			elif isinstance(tree,list) :
+				todel = reduce(lambda l1,l2 : l1 + l2 , map(rapply,range(len(tree))) , [])
+			else : todel = []
+			for k in todel : del tree[k]
 		lapply(tree)
 	else :
 		if todo[0] == [] : tree = None
