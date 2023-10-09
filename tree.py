@@ -133,14 +133,19 @@ if not todo : pass
 elif args.r :
 	if len(todo) < 2 : raise Exception('Usage' , 'At least 1 value for `append and `set')
 	op = check(todo[-2] , {'='})
-	todo = [todo[:-2] , loads(todo[-1])]
+	todo = [todo[:-2] , todo[-1]]
 elif todo[0] in {'-','?'} :
 	op = check(todo[0] , {'-','?'})
 	todo = [todo[1:] , None]
 else :
 	if len(todo) < 2 : raise Exception('Usage' , 'At least 1 value for `append and `set')
 	op = check(todo[-2] , {'='})
-	todo = [todo[:-2] , loads(todo[-1])]
+	todo = [todo[:-2] , todo[-1]]
+
+if not todo : pass
+else :
+	todo[0] = [loads(t) for t in todo[0]]
+	todo[-1] = loads(todo[-1])
 
 #FIXME when update to python 3.10+ : `match` - `case
 if not todo : dump(tree)
@@ -160,7 +165,7 @@ elif op == '=' :
 			def lapply(tree) :
 				def rapply(k) :
 					#print(f'{dump(k)},{dump(todo[0][0])} : {k == todo[0][0]}')
-					if k == loads(todo[0][0]) : tree[k] = todo[1]
+					if k == todo[0][0] : tree[k] = todo[1]
 					else : lapply(tree[k])
 				if isinstance(tree,dict) : list(map(rapply,tree))
 				elif isinstance(tree,list) : list(map(rapply,range(len(tree))))
@@ -179,7 +184,7 @@ elif op == '-' :
 		if not len(todo[0]) == 1 : raise Exception('Usage' , 'Can not set multi key or none key by `-A`')
 		def lapply(tree) :
 			def rapply(k) -> list :
-				if k == loads(todo[0][0]) : return [k]
+				if k == todo[0][0] : return [k]
 				else :
 					lapply(tree[k])
 					return []
