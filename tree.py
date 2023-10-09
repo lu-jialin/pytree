@@ -138,7 +138,7 @@ elif args.r :
 	todo = [todo[:-2] , todo[-1]]
 elif todo[0] in {'-','?'} :
 	op = check(todo[0] , {'-','?'})
-	todo = [todo[1:] , None]
+	todo = [todo[1:] , 'null']
 else :
 	if len(todo) < 2 : raise Exception('Usage' , 'At least 1 value for `append and `set')
 	op = check(todo[-2] , {'='})
