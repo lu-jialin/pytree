@@ -82,20 +82,22 @@ Change all. Only valid in `set and `delete.
 )
 args,todo = parser.parse_known_args()
 
+#FIXME :
+	#confilict between TOML and others : '[any]'
 def loads(tree:str) :
 	try :
-		tree = tomllib.loads(tree)
-	except Exception as tomle :
+		tree = yamllib.safe_load(tree)
+	except Exception as yamle :
 		try :
 			tree = jsonlib.loads(tree)
 		except Exception as jsone :
 			try :
-				tree = yamllib.safe_load(tree)
-			except Exception as yamle :
+				tree = tomllib.loads(tree)
+			except Exception as tomle :
 				print(f'TOML : {tomle}' , file=sys.stderr)
 				print(f'JSON : {jsone}' , file=sys.stderr)
 				print(f'YAML : {yamle}' , file=sys.stderr)
-				raise Exception()
+				raise Exception('Format' , 'Details is on the top')
 	return tree
 def dump(todump) :
 	if None : pass
