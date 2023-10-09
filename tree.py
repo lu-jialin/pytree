@@ -59,6 +59,9 @@ or the first node is "-"/"?".
 `append or `set when appears, otherwise `delete or `get.
 '''
 )
+parser.add_argument('-y' , action="store_true" , help=
+'''Input as YAML. Think about '[any]', it can be a TOML empyt table and a YAML list.'''
+)
 parser.add_argument('-J' , action="store_true" , help='Output as JSON(default)')
 parser.add_argument('-Y' , action="store_true" , help=
 '''
@@ -85,15 +88,18 @@ args,todo = parser.parse_known_args()
 #FIXME :
 	#confilict between TOML and others : '[any]'
 def loads(tree:str) :
-	try :
+	if args.y :
 		tree = yamllib.safe_load(tree)
-	except Exception as yamle :
+		return tree
+	try :
+		tree = jsonlib.loads(tree)
+	except Exception as jsone :
 		try :
-			tree = jsonlib.loads(tree)
-		except Exception as jsone :
+			tree = tomllib.loads(tree)
+		except Exception as tomle :
 			try :
-				tree = tomllib.loads(tree)
-			except Exception as tomle :
+				tree = yamllib.safe_load(tree)
+			except Exception as jsone :
 				print(f'TOML : {tomle}' , file=sys.stderr)
 				print(f'JSON : {jsone}' , file=sys.stderr)
 				print(f'YAML : {yamle}' , file=sys.stderr)
