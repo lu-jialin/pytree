@@ -7,9 +7,9 @@ import tomli_w
 #XXX : `tomllib` is in python 3.11 stdlib
 #But std `tomllib` don't support dump
 class tomllib :
-	def loads(s:str) : return tomli.loads(__s=s)
-	def dump(obj,fp) : return tomli_w.dump(__obj=obj,__fp=fp)
-	def dumps(obj)   : return tomli_w.dumps(__obj=obj)
+	def loads(s:str) : return tomli.loads(s)
+	#def dump(obj,fp) : return tomli_w.dump(__obj=obj,__fp=fp)
+	def dumps(obj)   : return tomli_w.dumps(obj)
 import json as jsonlib
 import yaml as yamllib
 from functools import reduce
