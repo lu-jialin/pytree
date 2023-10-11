@@ -15,9 +15,9 @@ import yaml as yamllib
 from functools import reduce
 
 toml_limits = [
-'JSON null'         ,
-'pure single value' ,
-'YAML refrence'     ,
+'null' ,
+'single value or single list' ,
+'YAML refrence' ,
 ]
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter , description=
 f'''
