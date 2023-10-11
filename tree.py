@@ -99,7 +99,7 @@ def loads(tree:str) :
 		except Exception as tomle :
 			try :
 				tree = yamllib.safe_load(tree)
-			except Exception as jsone :
+			except Exception as yamle :
 				print(f'TOML : {tomle}' , file=sys.stderr)
 				print(f'JSON : {jsone}' , file=sys.stderr)
 				print(f'YAML : {yamle}' , file=sys.stderr)
