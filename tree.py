@@ -2,10 +2,12 @@
 import sys , typing , textwrap
 import argparse
 import tomli
-import tomli_w
 #import tomllib
 #XXX : `tomllib` is in python 3.11 stdlib
 #But std `tomllib` don't support dump
+#import tomli_w
+#XXX : Array of Tables is preffered but tomli_w try inline table/list at first
+import toml as tomli_w
 class tomllib :
 	def loads(s:str) : return tomli.loads(s)
 	#def dump(obj,fp) : return tomli_w.dump(__obj=obj,__fp=fp)
